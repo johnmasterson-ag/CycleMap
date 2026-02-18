@@ -1,25 +1,27 @@
 import L from 'leaflet';
 
-type AvailabilityLevel = 'high' | 'medium' | 'low' | 'empty';
+export type AvailabilityLevel = 'high' | 'medium' | 'low' | 'empty' | 'closed';
 
-function getAvailabilityLevel(nbBikes: number, nbDocks: number): AvailabilityLevel {
-  if (nbBikes === 0) return 'empty';
-  const ratio = nbBikes / nbDocks;
-  if (ratio < 0.25) return 'low';
+export function getAvailabilityLevel(count: number, total: number, closed = false): AvailabilityLevel {
+  if (closed) return 'closed';
+  if (count === 0) return 'empty';
+  const ratio = count / total;
+  if (ratio < 0.2) return 'low';
   if (ratio < 0.5) return 'medium';
   return 'high';
 }
 
-const COLORS: Record<AvailabilityLevel, string> = {
-  high: '#22c55e',
-  medium: '#f97316',
-  low: '#ef4444',
-  empty: '#6b7280',
+export const AVAILABILITY_COLORS: Record<AvailabilityLevel, string> = {
+  high: '#4CAF50',
+  medium: '#FF8B00',
+  low: '#FF0000',
+  empty: '#666666',
+  closed: '#B4BBBF',
 };
 
 export function createStationIcon(nbBikes: number, nbDocks: number): L.DivIcon {
   const level = getAvailabilityLevel(nbBikes, nbDocks);
-  const color = COLORS[level];
+  const color = AVAILABILITY_COLORS[level];
 
   return L.divIcon({
     className: 'station-marker',
