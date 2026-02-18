@@ -48,13 +48,17 @@ export function useCoffeeShops(center: [number, number]) {
 
         const json = await response.json();
 
-        // Deduplicate by id
+        // Deduplicate by id + filter out Starbucks
+        const BLOCKED_BRANDS = ['starbucks'];
         const seen = new Set<number>();
         const results: CoffeeShop[] = [];
         for (const el of json.elements) {
           if (seen.has(el.id)) continue;
           seen.add(el.id);
           const tags = el.tags ?? {};
+          const brand = (tags.brand ?? '').toLowerCase();
+          const name = (tags.name ?? '').toLowerCase();
+          if (BLOCKED_BRANDS.some(b => brand.includes(b) || name.includes(b))) continue;
           results.push({
             id: el.id,
             name: tags.name || tags.brand || 'Coffee shop',
