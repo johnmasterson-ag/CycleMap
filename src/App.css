@@ -665,12 +665,23 @@
   min-width: 0;
 }
 
-.coffee-list-walk {
+.coffee-list-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.coffee-list-rating {
   font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.coffee-list-walk {
+  font-size: 0.65rem;
   color: #92400e;
   font-weight: 600;
   white-space: nowrap;
-  flex-shrink: 0;
 }
 
 /* ========== Mobile responsive ========== */

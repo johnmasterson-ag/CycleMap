@@ -60,7 +60,7 @@ function FitToRadius() {
 }
 
 interface WalkingRoute {
-  shopId: number;
+  shopId: string;
   route: LatLngTuple[];
   duration: number;
   distance: number;
@@ -73,7 +73,6 @@ function useWalkingRoutes(shops: CoffeeShop[]) {
     if (shops.length === 0) return;
 
     const results: WalkingRoute[] = [];
-    // Fetch in batches to be polite to the OSRM server
     for (const shop of shops) {
       try {
         const url = `https://router.project-osrm.org/route/v1/foot/${OFFICE[1]},${OFFICE[0]};${shop.lon},${shop.lat}?overview=full&geometries=geojson`;
@@ -106,12 +105,18 @@ function useWalkingRoutes(shops: CoffeeShop[]) {
   return routes;
 }
 
+function ratingColor(rating: number): string {
+  if (rating >= 8) return '#16a34a';
+  if (rating >= 6) return '#d97706';
+  return '#dc2626';
+}
+
 export function CoffeeMap() {
   const { shops, loading, error } = useCoffeeShops(OFFICE);
   const routes = useWalkingRoutes(shops);
-  const [selectedShop, setSelectedShop] = useState<number | null>(null);
+  const [selectedShop, setSelectedShop] = useState<string | null>(null);
 
-  const getRoute = (shopId: number) => routes.find(r => r.shopId === shopId);
+  const getRoute = (shopId: string) => routes.find(r => r.shopId === shopId);
 
   return (
     <div style={{ position: 'relative', flex: 1, display: 'flex' }}>
@@ -184,19 +189,24 @@ export function CoffeeMap() {
               <Popup>
                 <div className="station-popup">
                   <h3>{shop.name}</h3>
-                  {shop.brand && shop.brand !== shop.name && (
-                    <p style={{ margin: '0 0 4px', color: '#6b7280', fontSize: '0.8rem' }}>
-                      {shop.brand}
+                  {shop.rating !== undefined && (
+                    <p style={{ margin: '0 0 4px', color: ratingColor(shop.rating), fontSize: '0.85rem', fontWeight: 600 }}>
+                      {shop.rating.toFixed(1)}/10
+                      {shop.price !== undefined && (
+                        <span style={{ color: '#6b7280', fontWeight: 400, marginLeft: 6 }}>
+                          {'$'.repeat(shop.price)}
+                        </span>
+                      )}
+                    </p>
+                  )}
+                  {shop.address && (
+                    <p style={{ margin: '0 0 4px', color: '#6b7280', fontSize: '0.75rem' }}>
+                      {shop.address}
                     </p>
                   )}
                   {walkMin !== null && distM !== null && (
                     <p style={{ margin: '4px 0 0', color: '#374151', fontSize: '0.85rem' }}>
                       🚶 {walkMin} min · {distM}m
-                    </p>
-                  )}
-                  {shop.openingHours && (
-                    <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '0.75rem' }}>
-                      {shop.openingHours}
                     </p>
                   )}
                 </div>
@@ -212,7 +222,7 @@ export function CoffeeMap() {
           ☕ Coffee near the office
         </div>
         {loading && <p className="loading-text">Finding coffee shops...</p>}
-        {error && <p className="loading-text" style={{ color: '#991b1b' }}>Error: {error}</p>}
+        {error && <p className="loading-text" style={{ color: '#991b1b' }}>{error}</p>}
         {!loading && !error && (
           <div className="coffee-list">
             {shops.map(shop => {
@@ -227,9 +237,16 @@ export function CoffeeMap() {
                   onClick={() => setSelectedShop(isSelected ? null : shop.id)}
                 >
                   <span className="coffee-list-name">{shop.name}</span>
-                  {walkMin !== null && (
-                    <span className="coffee-list-walk">{walkMin} min</span>
-                  )}
+                  <span className="coffee-list-meta">
+                    {shop.rating !== undefined && (
+                      <span className="coffee-list-rating" style={{ color: ratingColor(shop.rating) }}>
+                        {shop.rating.toFixed(1)}
+                      </span>
+                    )}
+                    {walkMin !== null && (
+                      <span className="coffee-list-walk">{walkMin} min</span>
+                    )}
+                  </span>
                 </button>
               );
             })}
