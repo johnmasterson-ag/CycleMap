@@ -77,7 +77,8 @@
 /* Override default leaflet-div-icon styles */
 .station-marker,
 .office-marker,
-.train-marker {
+.train-marker,
+.coffee-marker {
   background: transparent !important;
   border: none !important;
 }
@@ -602,6 +603,76 @@
   margin: 6px 0 0;
 }
 
+/* ========== Coffee info panel ========== */
+.coffee-info-panel {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  width: 240px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.coffee-info-header {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 10px;
+}
+
+.coffee-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.coffee-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.coffee-list-item:hover {
+  background: #fef3c7;
+}
+
+.coffee-list-item.selected {
+  background: #fde68a;
+}
+
+.coffee-list-name {
+  font-size: 0.8rem;
+  color: #374151;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.coffee-list-walk {
+  font-size: 0.7rem;
+  color: #92400e;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* ========== Mobile responsive ========== */
 @media (max-width: 640px) {
   /* Route panel becomes compact bottom sheet */
@@ -685,8 +756,19 @@
 
   /* Shorten tab labels on small screens */
   .floating-tab {
-    padding: 6px 12px;
-    font-size: 0.8rem;
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+
+  /* Coffee panel as bottom sheet on mobile */
+  .coffee-info-panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    max-height: 40vh;
   }
 
   /* Hide operator column on mobile */

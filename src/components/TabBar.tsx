@@ -1,4 +1,4 @@
-export type TabId = 'map' | 'trains';
+export type TabId = 'map' | 'trains' | 'coffee';
 
 interface TabBarProps {
   activeTab: TabId;

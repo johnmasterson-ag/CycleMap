@@ -69,7 +69,7 @@ interface CycleMapProps {
 }
 
 export function CycleMap({ stations }: CycleMapProps) {
-  const { routes } = useCycleRoutes(LONDON_BRIDGE_STATION, OFFICE_LOCATION);
+  const { routes, walkingRoute } = useCycleRoutes(LONDON_BRIDGE_STATION, OFFICE_LOCATION);
   const primaryRoute = routes[0];
   const altRoute = routes[1];
 
@@ -86,6 +86,31 @@ export function CycleMap({ stations }: CycleMapProps) {
           attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
+
+        {/* Walking route (rendered first, below cycling routes) */}
+        {walkingRoute && (
+          <Polyline
+            positions={walkingRoute.route}
+            pathOptions={{
+              color: '#8b5cf6',
+              weight: 4,
+              opacity: 0.7,
+              dashArray: '4 8',
+            }}
+          >
+            <Popup>
+              <div className="station-popup">
+                <h3>Walking Route</h3>
+                <p style={{ margin: '4px 0 0', color: '#374151', fontSize: '0.85rem' }}>
+                  London Bridge → AG Grid
+                </p>
+                <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '0.8rem' }}>
+                  {(walkingRoute.distance / 1000).toFixed(1)} km · ~{Math.round(walkingRoute.duration / 60)} min
+                </p>
+              </div>
+            </Popup>
+          </Polyline>
+        )}
 
         {/* Alternative route (rendered first so primary draws on top) */}
         {altRoute && (

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { TabId } from './components/TabBar';
 import { CycleMap } from './components/CycleMap';
 import { TrainsWeather } from './components/TrainsWeather';
+import { CoffeeMap } from './components/CoffeeMap';
 import { useBikePoints } from './hooks/useBikePoints';
 import './App.css';
 
@@ -34,14 +35,18 @@ function App() {
         >
           Trains & Weather
         </button>
+        <button
+          className={`floating-tab ${activeTab === 'coffee' ? 'active' : ''}`}
+          onClick={() => setActiveTab('coffee')}
+        >
+          Coffee
+        </button>
       </div>
 
       <div className="tab-content">
-        {activeTab === 'map' ? (
-          <CycleMap stations={stations} />
-        ) : (
-          <TrainsWeather />
-        )}
+        {activeTab === 'map' && <CycleMap stations={stations} />}
+        {activeTab === 'trains' && <TrainsWeather />}
+        {activeTab === 'coffee' && <CoffeeMap />}
       </div>
     </div>
   );
