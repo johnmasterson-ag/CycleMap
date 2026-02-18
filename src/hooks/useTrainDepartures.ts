@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { DarwinResponse, DarwinService, TrainService } from '../types/trains';
 
-// Community Huxley2 instance — CORS-enabled, no API key needed
+// Huxley2 community instance (CORS-enabled, uses shared NRE token)
 const HUXLEY_BASE = 'https://national-rail-api.davwheat.dev';
 
 function parseTimeToMinutes(time: string): number | null {
@@ -78,14 +78,14 @@ export function useTrainDepartures() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const hasCredentials = true; // No credentials needed for community instance
+  const hasCredentials = true;
 
   const fetchAll = useCallback(async (signal: AbortSignal) => {
     try {
       setLoading(true);
       const [deps, arrs] = await Promise.all([
-        fetchTrains('lbg', 'rei', 10, signal),
-        fetchTrains('rei', 'lbg', 10, signal),
+        fetchTrains('lbg', 'rdh', 10, signal),
+        fetchTrains('rdh', 'lbg', 10, signal),
       ]);
       setDepartures(deps);
       setArrivals(arrs);

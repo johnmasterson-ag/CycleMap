@@ -253,6 +253,7 @@ export function TrainsWeather() {
       <div className="tw-trains-row">
         <TrainTable title="London Bridge → Redhill" services={trains.departures} />
         <TrainTable title="Redhill → London Bridge" services={trains.arrivals} />
+
         {trains.loading && <p className="loading-text">Loading trains...</p>}
       </div>
     </div>
