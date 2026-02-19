@@ -189,10 +189,10 @@ export function CoffeeMap() {
               <Popup>
                 <div className="station-popup">
                   <h3>{shop.name}</h3>
-                  {shop.rating !== undefined && (
+                  {shop.rating != null && (
                     <p style={{ margin: '0 0 4px', color: ratingColor(shop.rating), fontSize: '0.85rem', fontWeight: 600 }}>
                       {shop.rating.toFixed(1)}/10
-                      {shop.price !== undefined && (
+                      {shop.price != null && (
                         <span style={{ color: '#6b7280', fontWeight: 400, marginLeft: 6 }}>
                           {'$'.repeat(shop.price)}
                         </span>
@@ -238,7 +238,7 @@ export function CoffeeMap() {
                 >
                   <span className="coffee-list-name">{shop.name}</span>
                   <span className="coffee-list-meta">
-                    {shop.rating !== undefined && (
+                    {shop.rating != null && (
                       <span className="coffee-list-rating" style={{ color: ratingColor(shop.rating) }}>
                         {shop.rating.toFixed(1)}
                       </span>
