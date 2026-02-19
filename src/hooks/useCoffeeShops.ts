@@ -7,92 +7,37 @@ export interface CoffeeShop {
   lon: number;
   address?: string;
   rating?: number;       // 0-10 scale
-  price?: number;        // 1-4 ($–$$$$)
+  price?: number;        // 1-4 ($-$$$$)
   distance?: number;     // meters from center
 }
 
-// Foursquare category IDs for coffee
-const COFFEE_CATEGORY = '13034'; // Coffee Shop
-const CAFE_CATEGORY = '13032';   // Café
-
-// ~5 min walk at 80m/min = 400m radius
-const RADIUS_M = 400;
-
-const FSQ_API_KEY = import.meta.env.VITE_FSQ_API_KEY ?? '';
-
-const BLOCKED_NAMES = ['starbucks'];
-
-export function useCoffeeShops(center: [number, number]) {
+/**
+ * Loads coffee shop data from a static JSON file generated at build time
+ * by scripts/fetch-coffee.mjs. The Foursquare Places API doesn't support
+ * CORS, so we pre-fetch server-side during the build.
+ */
+export function useCoffeeShops(_center: [number, number]) {
   const [shops, setShops] = useState<CoffeeShop[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    if (!FSQ_API_KEY) {
-      setError('Missing VITE_FSQ_API_KEY');
-      setLoading(false);
-      return;
-    }
 
+  useEffect(() => {
     const controller = new AbortController();
 
-    async function fetchShops() {
+    async function loadShops() {
       try {
         setLoading(true);
-
-        const params = new URLSearchParams({
-          ll: `${center[0]},${center[1]}`,
-          radius: String(RADIUS_M),
-          categories: `${COFFEE_CATEGORY},${CAFE_CATEGORY}`,
-          limit: '50',
-        });
-
         const response = await fetch(
-          `https://places-api.foursquare.com/places/search?${params}`,
-          {
-            headers: {
-              Authorization: `Bearer ${FSQ_API_KEY}`,
-              Accept: 'application/json',
-              'X-Places-Api-Version': '2025-06-17',
-            },
-            signal: controller.signal,
-          },
+          `${import.meta.env.BASE_URL}coffee-shops.json`,
+          { signal: controller.signal },
         );
 
         if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error('Foursquare API key is invalid — check your VITE_FSQ_API_KEY.');
-          }
-          if (response.status === 429) {
-            throw new Error('Foursquare API credit limit reached. Check billing at foursquare.com/developers.');
-          }
-          throw new Error(`Foursquare API error: ${response.status}`);
+          throw new Error('Coffee shop data not available — rebuild required');
         }
 
         const json = await response.json();
-
-        const results: CoffeeShop[] = [];
-        for (const place of json.results ?? []) {
-          const name = (place.name ?? '').toLowerCase();
-          if (BLOCKED_NAMES.some(b => name.includes(b))) continue;
-
-          // New API: lat/lon are top-level; id is fsq_place_id
-          const lat = place.latitude ?? place.geocodes?.main?.latitude;
-          const lon = place.longitude ?? place.geocodes?.main?.longitude;
-          if (lat == null || lon == null) continue;
-
-          results.push({
-            id: place.fsq_place_id ?? place.fsq_id,
-            name: place.name,
-            lat,
-            lon,
-            address: place.location?.formatted_address ?? place.location?.address,
-            rating: place.rating,
-            price: place.price,
-            distance: place.distance,
-          });
-        }
-
-        setShops(results);
+        setShops(json.shops ?? []);
         setError(null);
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return;
@@ -102,9 +47,9 @@ export function useCoffeeShops(center: [number, number]) {
       }
     }
 
-    fetchShops();
+    loadShops();
     return () => controller.abort();
-  }, [center[0], center[1]]);
+  }, []);
 
   return { shops, loading, error };
 }
