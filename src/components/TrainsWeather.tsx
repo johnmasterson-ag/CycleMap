@@ -226,6 +226,9 @@ export function TrainsWeather() {
   const weather = useWeather();
   const trains = useTrainDepartures();
 
+  const formatTime = (d: Date | null) =>
+    d ? d.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : null;
+
   return (
     <div className="tw-container">
       {/* Commute decision banner */}
@@ -242,6 +245,9 @@ export function TrainsWeather() {
         {weather.redhill && <WeatherCard weather={weather.redhill} />}
         {weather.loading && <p className="loading-text">Loading weather...</p>}
       </div>
+      {weather.lastRefreshed && (
+        <p className="refresh-timestamp-inline">Weather updated {formatTime(weather.lastRefreshed)}</p>
+      )}
 
       {/* Live trains */}
       <h3 className="tw-section-heading">Live Trains</h3>
@@ -256,6 +262,9 @@ export function TrainsWeather() {
 
         {trains.loading && <p className="loading-text">Loading trains...</p>}
       </div>
+      {trains.lastRefreshed && (
+        <p className="refresh-timestamp-inline">Trains updated {formatTime(trains.lastRefreshed)}</p>
+      )}
     </div>
   );
 }

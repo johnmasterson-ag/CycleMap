@@ -55,6 +55,7 @@ export function useWeather() {
   const [redhill, setRedhill] = useState<LocationWeather | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -69,6 +70,7 @@ export function useWeather() {
         setLondonBridge(parseWeather(lbData, LOCATIONS.londonBridge.name));
         setRedhill(parseWeather(rhData, LOCATIONS.redhill.name));
         setError(null);
+        setLastRefreshed(new Date());
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return;
         setError(err instanceof Error ? err.message : 'Unknown error');
@@ -81,5 +83,5 @@ export function useWeather() {
     return () => controller.abort();
   }, []);
 
-  return { londonBridge, redhill, loading, error };
+  return { londonBridge, redhill, loading, error, lastRefreshed };
 }

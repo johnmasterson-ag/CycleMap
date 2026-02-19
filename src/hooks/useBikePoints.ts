@@ -27,6 +27,7 @@ export function useBikePoints() {
   const [stations, setStations] = useState<StationInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -46,6 +47,7 @@ export function useBikePoints() {
           .filter(s => s.installed && !s.locked);
         setStations(parsed);
         setError(null);
+        setLastRefreshed(new Date());
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return;
         setError(err instanceof Error ? err.message : 'Unknown error');
@@ -58,5 +60,5 @@ export function useBikePoints() {
     return () => controller.abort();
   }, []);
 
-  return { stations, loading, error };
+  return { stations, loading, error, lastRefreshed };
 }

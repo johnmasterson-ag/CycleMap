@@ -66,9 +66,10 @@ function FitBounds() {
 
 interface CycleMapProps {
   stations: StationInfo[];
+  lastRefreshed: Date | null;
 }
 
-export function CycleMap({ stations }: CycleMapProps) {
+export function CycleMap({ stations, lastRefreshed }: CycleMapProps) {
   const { routes, walkingRoute } = useCycleRoutes(LONDON_BRIDGE_STATION, OFFICE_LOCATION);
   const primaryRoute = routes[0];
   const altRoute = routes[1];
@@ -196,6 +197,13 @@ export function CycleMap({ stations }: CycleMapProps) {
           stations={stations}
           onSwap={() => {/* future: swap origin/destination */}}
         />
+      )}
+
+      {/* Refresh timestamp */}
+      {lastRefreshed && (
+        <div className="refresh-timestamp">
+          Updated {lastRefreshed.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+        </div>
       )}
     </div>
   );

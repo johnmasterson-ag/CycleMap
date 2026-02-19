@@ -77,6 +77,7 @@ export function useTrainDepartures() {
   const [arrivals, setArrivals] = useState<TrainService[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
   const hasCredentials = true;
 
@@ -90,6 +91,7 @@ export function useTrainDepartures() {
       setDepartures(deps);
       setArrivals(arrs);
       setError(null);
+      setLastRefreshed(new Date());
     } catch (err) {
       if (err instanceof DOMException && err.name === 'AbortError') return;
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -113,5 +115,5 @@ export function useTrainDepartures() {
     };
   }, [fetchAll]);
 
-  return { departures, arrivals, loading, error, hasCredentials };
+  return { departures, arrivals, loading, error, hasCredentials, lastRefreshed };
 }

@@ -26,7 +26,6 @@ export function useCoffeeShops(center: [number, number]) {
   const [shops, setShops] = useState<CoffeeShop[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
     if (!FSQ_API_KEY) {
       setError('Missing VITE_FSQ_API_KEY');
@@ -61,6 +60,9 @@ export function useCoffeeShops(center: [number, number]) {
         );
 
         if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error('Foursquare API key is invalid. V3 keys start with "fsq3" — check your VITE_FSQ_API_KEY.');
+          }
           throw new Error(`Foursquare API error: ${response.status}`);
         }
 

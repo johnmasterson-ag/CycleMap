@@ -7,7 +7,7 @@ import { useBikePoints } from './hooks/useBikePoints';
 import './App.css';
 
 function App() {
-  const { stations, error } = useBikePoints();
+  const { stations, error, lastRefreshed: bikeLastRefreshed } = useBikePoints();
   const [activeTab, setActiveTab] = useState<TabId>('map');
 
   return (
@@ -44,7 +44,7 @@ function App() {
       </div>
 
       <div className="tab-content">
-        {activeTab === 'map' && <CycleMap stations={stations} />}
+        {activeTab === 'map' && <CycleMap stations={stations} lastRefreshed={bikeLastRefreshed} />}
         {activeTab === 'trains' && <TrainsWeather />}
         {activeTab === 'coffee' && <CoffeeMap />}
       </div>
