@@ -44,8 +44,6 @@ export function useCoffeeShops(center: [number, number]) {
           radius: String(RADIUS_M),
           categories: `${COFFEE_CATEGORY},${CAFE_CATEGORY}`,
           limit: '50',
-          fields: 'fsq_id,name,geocodes,location,rating,price,distance',
-          sort: 'DISTANCE',
         });
 
         const response = await fetch(
@@ -77,14 +75,16 @@ export function useCoffeeShops(center: [number, number]) {
           const name = (place.name ?? '').toLowerCase();
           if (BLOCKED_NAMES.some(b => name.includes(b))) continue;
 
-          const geo = place.geocodes?.main;
-          if (!geo) continue;
+          // New API: lat/lon are top-level; id is fsq_place_id
+          const lat = place.latitude ?? place.geocodes?.main?.latitude;
+          const lon = place.longitude ?? place.geocodes?.main?.longitude;
+          if (lat == null || lon == null) continue;
 
           results.push({
-            id: place.fsq_id,
+            id: place.fsq_place_id ?? place.fsq_id,
             name: place.name,
-            lat: geo.latitude,
-            lon: geo.longitude,
+            lat,
+            lon,
             address: place.location?.formatted_address ?? place.location?.address,
             rating: place.rating,
             price: place.price,
