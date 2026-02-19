@@ -49,11 +49,12 @@ export function useCoffeeShops(center: [number, number]) {
         });
 
         const response = await fetch(
-          `https://api.foursquare.com/v3/places/search?${params}`,
+          `https://places-api.foursquare.com/places/search?${params}`,
           {
             headers: {
-              Authorization: FSQ_API_KEY,
+              Authorization: `Bearer ${FSQ_API_KEY}`,
               Accept: 'application/json',
+              'X-Places-Api-Version': '2025-06-17',
             },
             signal: controller.signal,
           },
@@ -61,7 +62,10 @@ export function useCoffeeShops(center: [number, number]) {
 
         if (!response.ok) {
           if (response.status === 401) {
-            throw new Error('Foursquare API key is invalid. V3 keys start with "fsq3" — check your VITE_FSQ_API_KEY.');
+            throw new Error('Foursquare API key is invalid — check your VITE_FSQ_API_KEY.');
+          }
+          if (response.status === 429) {
+            throw new Error('Foursquare API credit limit reached. Check billing at foursquare.com/developers.');
           }
           throw new Error(`Foursquare API error: ${response.status}`);
         }
